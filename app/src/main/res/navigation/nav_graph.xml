@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~   Created by Eric Ho on 12/3/20 7:54 PM
+  ~   Copyright (c) 2020 . All rights reserved.
+  ~   Last modified 12/2/20 2:38 PM
+  ~   Email: clhoac@gmail.com
+  -->
+
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph" />

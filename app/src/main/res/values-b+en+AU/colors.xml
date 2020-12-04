@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~   Created by Eric Ho on 12/3/20 7:54 PM
+  ~   Copyright (c) 2020 . All rights reserved.
+  ~   Last modified 11/30/20 10:06 AM
+  ~   Email: clhoac@gmail.com
+  -->
+
+<resources>
+    <color name="colorPrimary">#ee0202</color>
+    <color name="colorPrimaryDark">#ee0278</color>
+    <color name="colorAccent">#02eeee</color>
+</resources>

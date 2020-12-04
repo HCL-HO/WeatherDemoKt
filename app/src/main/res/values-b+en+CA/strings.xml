@@ -1,0 +1,30 @@
+<!--
+  ~   Created by Eric Ho on 12/3/20 7:54 PM
+  ~   Copyright (c) 2020 . All rights reserved.
+  ~   Last modified 12/3/20 6:52 PM
+  ~   Email: clhoac@gmail.com
+  -->
+
+<resources>
+    <string name="app_name">My Eh Weather</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="weather_search_bar_hint">City Name/Zip Code</string>
+    <string name="temp_wind_speed">Wind: %s miles/hr</string>
+    <string name="temp_humidity">Humidity: %s%%</string>
+    <string name="temp_max_temp">Max: %s</string>
+    <string name="temp_min_temp">Min: %s</string>
+    <string name="temp_feel_temp">Feel: %s</string>
+    <string name="lb_search">Search</string>
+    <string name="hint_country_code">Country Code</string>
+    <string name="msg_record_removed">%s is removed</string>
+    <string name="lb_undo">UNDO</string>
+    <string name="error_result_not_found">Result not found</string>
+</resources>
