@@ -186,6 +186,7 @@ class MainActivity : AppCompatActivity() {
         })
 
         viewModel.networkError.observe(this, {
+            resetSearchText()
             main_swipe_refresh.isRefreshing = false
             //show network error
             it?.let {
