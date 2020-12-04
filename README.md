@@ -1,6 +1,9 @@
 # WeatherDemoKt
 Demo App Using Kotlin, MVVM, unit test, instrumented test
 
+
+<img src="https://github.com/HCL-HO/WeatherDemoKt/blob/main/demo.gif" width="216" height="444" />
+
 ## A Demo App developed for the following requirements
 
 High-level requirements:
