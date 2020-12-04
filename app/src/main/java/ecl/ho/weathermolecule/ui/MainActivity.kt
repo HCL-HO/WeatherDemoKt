@@ -207,6 +207,7 @@ class MainActivity : AppCompatActivity() {
         //reset text
         weather_country_code.setText("")
         weather_search_bar.setText("")
+        weather_country_code.visibility = GONE
         val view = this.currentFocus
         view?.let {
             val imm: InputMethodManager =
