@@ -82,25 +82,17 @@ class MainActivity : AppCompatActivity() {
             doSearch()
         }
 
-        weather_search_bar.setOnKeyListener(object : View.OnKeyListener {
-            override fun onKey(p0: View?, p1: Int, keyEvent: KeyEvent?): Boolean {
-                val input = weather_search_bar.text.toString()
-                // allow country code input when digits are input
-                if (input.length > 1 && WeatherUtil.isSearchByZipCode(input)) {
-                    weather_country_code.visibility = VISIBLE
-                } else {
-                    weather_country_code.visibility = GONE
-                }
-
-                if (keyEvent?.keyCode == KeyEvent.KEYCODE_ENTER) {
-                    doSearch()
-                    return true
-                }
-                return false
+        val searchBarActionFilter = InputFilter { source, start, end, dest, dstart, dend ->
+            // allow country code input when digits are input
+            if (source.length > 1 && WeatherUtil.isSearchByZipCode(source.toString())) {
+                weather_country_code.visibility = VISIBLE
+            } else {
+                weather_country_code.visibility = GONE
             }
-        })
+            source
+        }
 
-        weather_country_code.setOnEditorActionListener(object : TextView.OnEditorActionListener {
+        val onDoneActionListener = object : TextView.OnEditorActionListener {
             override fun onEditorAction(p0: TextView, p1: Int, keyEvent: KeyEvent?): Boolean {
                 if (keyEvent?.keyCode == KeyEvent.KEYCODE_ENTER) {
                     doSearch()
@@ -108,9 +100,14 @@ class MainActivity : AppCompatActivity() {
                 }
                 return false
             }
-        })
+        }
 
-        weather_search_bar.filters = arrayOf(EditTextUtil.LetterOrDigitFilter)
+        weather_search_bar.setOnEditorActionListener(onDoneActionListener)
+
+        weather_country_code.setOnEditorActionListener(onDoneActionListener)
+
+        weather_search_bar.filters =
+            arrayOf(EditTextUtil.LetterOrDigitFilter, searchBarActionFilter)
         weather_country_code.filters = arrayOf(EditTextUtil.LetterFilter)
     }
 
