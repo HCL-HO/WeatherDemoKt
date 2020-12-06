@@ -20,6 +20,7 @@ import ecl.ho.weathermolecule.network.WeatherApi
 import ecl.ho.weathermolecule.service.RecentSearchService
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
 
 class MainViewModel(
@@ -71,7 +72,7 @@ class MainViewModel(
         }
     }
 
-    suspend fun upsertSearchRecord(it: String) {
+    fun upsertSearchRecord(it: String) = runBlocking {
         val record = SearchRecord(
             cityName = it,
             create_date = System.currentTimeMillis()

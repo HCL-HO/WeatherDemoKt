@@ -27,4 +27,5 @@ interface SearchRecordDao {
 
     @Query("update search_record set crtd = :crtd where city = :name")
     suspend fun updateSearchRecord(name: String, crtd: Long): Int
+
 }

@@ -18,7 +18,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.nio.charset.Charset
 
 private const val BASE_URL = "https://api.openweathermap.org/"
 private const val B64_Key = "OTVkMTkwYTQzNDA4Mzg3OWE2Mzk4YWFmZDU0ZDllNzM="

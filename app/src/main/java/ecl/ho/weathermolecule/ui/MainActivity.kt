@@ -27,6 +27,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import ecl.ho.weathermolecule.R
 import ecl.ho.weathermolecule.database.WeatherDatabase
+import ecl.ho.weathermolecule.model.WeatherResp
 import ecl.ho.weathermolecule.service.ForegroundOnlyLocationService
 import ecl.ho.weathermolecule.ui.recentsearch.RecentSearchActivity
 import ecl.ho.weathermolecule.util.EditTextUtil
@@ -39,11 +40,13 @@ import ecl.ho.weathermolecule.util.WeatherUtil.Companion.toHumidityPercent
 import ecl.ho.weathermolecule.util.WeatherUtil.Companion.windToMilesPerHr
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
+import retrofit2.HttpException
 import java.lang.StringBuilder
 
 
 class MainActivity : AppCompatActivity() {
 
+    private lateinit var locationService: ForegroundOnlyLocationService
     private var showingCity: String? = null
     private val TAG_REQ_CODE_HIST = 8
     private val pm = PermissionManager(this)
@@ -62,8 +65,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupRefresh() {
         main_swipe_refresh.setOnRefreshListener {
-            main_swipe_refresh.isRefreshing = true
             showingCity?.let {
+                main_swipe_refresh.isRefreshing = true
                 viewModel.searchByName(it)
             }
         }
@@ -82,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         weather_search_bar.setOnKeyListener(object : View.OnKeyListener {
             override fun onKey(p0: View?, p1: Int, keyEvent: KeyEvent?): Boolean {
                 val input = weather_search_bar.text.toString()
+                // allow country code input when digits are input
                 if (input.length > 1 && WeatherUtil.isSearchByZipCode(input)) {
                     weather_country_code.visibility = VISIBLE
                 } else {
@@ -148,63 +152,72 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.searchResult.observe(this, {
             main_swipe_refresh.isRefreshing = false
-            showingCity = it.name
             resetSearchText()
-            //display
-            details_title.text = it.name
-            details_temp.text = it.main.temp.kelvinToCelsius().toCelsiusString()
-            details_max_temp.text = String.format(
-                getString(R.string.temp_max_temp),
-                it.main.temp_max.kelvinToCelsius().toCelsiusString()
-            )
-            details_min_temp.text = String.format(
-                getString(R.string.temp_min_temp),
-                it.main.temp_min.kelvinToCelsius().toCelsiusString()
-            )
-            details_feel_temp.text = String.format(
-                getString(R.string.temp_feel_temp),
-                it.main.feels_like.kelvinToCelsius().toCelsiusString()
-            )
-            details_datetime.text = it.dt?.toDisplayDateTime()
-
-            val option = RequestOptions()
-                .fitCenter()
-
-            if (it.weather.isNotEmpty()) {
-                val weather = it.weather[0]
-                if (it.weather[0].icon != null) {
-                    val icon = WeatherUtil.codeToIconUrl(it.weather[0].icon!!)
-                    Glide.with(this)
-                        .load(icon)
-                        .apply(option)
-                        .into(details_icon)
-                }
-                it.weather[0].description?.let {
-                    details_desciption.text = it
-                }
-            }
-
-            details_humidity.text = it.main.humidity.toHumidityPercent(this)
-            details_wind.text = it.wind.speed.windToMilesPerHr(this)
+            showingCity = it.name
+            displayWeatherData(it)
         })
 
         viewModel.networkError.observe(this, {
             resetSearchText()
             main_swipe_refresh.isRefreshing = false
             //show network error
-            it?.let {
-                details_title.text = getString(R.string.error_result_not_found)
-                details_temp.text = ""
-                details_max_temp.text = ""
-                details_min_temp.text = ""
-                details_feel_temp.text = ""
-                details_datetime.text = ""
-                details_wind.text = ""
-                details_humidity.text = ""
-                details_desciption.text = ""
-                details_icon.setImageResource(R.drawable.ic_baseline_error_24)
-            }
+            emptyWeatherDisplay(it)
         })
+
+    }
+
+    private fun emptyWeatherDisplay(it: HttpException?) {
+        it?.let {
+            details_title.text = getString(R.string.error_result_not_found)
+            details_temp.text = ""
+            details_max_temp.text = ""
+            details_min_temp.text = ""
+            details_feel_temp.text = ""
+            details_datetime.text = ""
+            details_wind.text = ""
+            details_humidity.text = ""
+            details_desciption.text = ""
+            details_icon.setImageResource(R.drawable.ic_baseline_error_24)
+        }
+    }
+
+    private fun displayWeatherData(it: WeatherResp) {
+        //display
+        details_title.text = it.name
+        details_temp.text = it.main.temp.kelvinToCelsius().toCelsiusString()
+        details_max_temp.text = String.format(
+            getString(R.string.temp_max_temp),
+            it.main.temp_max.kelvinToCelsius().toCelsiusString()
+        )
+        details_min_temp.text = String.format(
+            getString(R.string.temp_min_temp),
+            it.main.temp_min.kelvinToCelsius().toCelsiusString()
+        )
+        details_feel_temp.text = String.format(
+            getString(R.string.temp_feel_temp),
+            it.main.feels_like.kelvinToCelsius().toCelsiusString()
+        )
+        details_datetime.text = it.dt?.toDisplayDateTime()
+
+        val option = RequestOptions()
+            .fitCenter()
+
+        if (it.weather.isNotEmpty()) {
+            val weather = it.weather[0]
+            if (it.weather[0].icon != null) {
+                val icon = WeatherUtil.codeToIconUrl(it.weather[0].icon!!)
+                Glide.with(this)
+                    .load(icon)
+                    .apply(option)
+                    .into(details_icon)
+            }
+            it.weather[0].description?.let {
+                details_desciption.text = it
+            }
+        }
+
+        details_humidity.text = it.main.humidity.toHumidityPercent(this)
+        details_wind.text = it.wind.speed.windToMilesPerHr(this)
 
     }
 
@@ -222,32 +235,35 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupFAB() {
+        val locationListener = object : ForegroundOnlyLocationService.LocationListener {
+            override fun onLocation(location: Location?) {
+                if (location != null) {
+                    getWeatherByGPSFromApi(location)
+                }
+            }
+        }
+
+        locationService = ForegroundOnlyLocationService(this, locationListener)
+
+        locationService.onCompleteListener =
+            object : ForegroundOnlyLocationService.OnCompleteListener {
+                override fun onComplete() {
+                    fab.isEnabled = true
+                }
+            }
+
         fab.setOnClickListener {
+            it.isEnabled = false
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                 pm.requestPermission(object : PermissionManager.PermissionListener {
                     override fun onPermissionsGranted() {
-                        getWeatherByGPS()
+                        locationService.getLocation()
                     }
                 }, Manifest.permission.ACCESS_FINE_LOCATION)
             }
         }
     }
 
-
-    private fun getWeatherByGPS() {
-        val service = ForegroundOnlyLocationService(this,
-            object : ForegroundOnlyLocationService.LocationListener {
-                override fun onLocation(location: Location?) {
-                    if (location != null) {
-                        getWeatherByGPSFromApi(location)
-                        // request weather
-                    } else {
-//                        Log.d(ForegroundOnlyLocationService.TAG, "Location missing in callback.")
-                    }
-                }
-            })
-        service.getLocation()
-    }
 
     private fun getWeatherByGPSFromApi(location: Location) {
         Log.d("location", location.toString())
@@ -276,68 +292,7 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (!grantResults.contains(PackageManager.PERMISSION_DENIED)) {
-            pm.onPermissionsGranted(requestCode)
-        }
+        pm.onPermissionsResult(grantResults, requestCode)
+        fab.isEnabled = true
     }
 }
-
-
-//    lateinit var locationManager: LocationManager
-
-//    @SuppressLint("MissingPermission")
-//    private fun testLocation() {
-//        locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-//        val hasGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-//        val hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-//        val minTimeinMS: Long = 10000
-//        val minDistanceinM: Float = 50f
-//        var gps: Location = null
-//        var network_gps: Location = null
-//        val locationListener = object : LocationListener {
-//            override fun onLocationChanged(p0: Location?) {
-//                if (p0 != null) {
-//                    gps = p0
-//                    p0.
-//                }
-//            }
-//
-//            override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
-//            }
-//
-//            override fun onProviderEnabled(p0: String?) {
-//            }
-//
-//            override fun onProviderDisabled(p0: String?) {
-//            }
-//
-//        }
-//        if (hasGps || hasNetwork) {
-//            if (hasGps) {
-//                locationManager.requestLocationUpdates(
-//                    LocationManager.GPS_PROVIDER,
-//                    minTimeinMS,
-//                    minDistanceinM,
-//                    locationListener
-//                )
-//                val localGpsLocation =
-//                    locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-//                if (localGpsLocation != null) {
-//                    //DO STH
-//                }
-//            }
-//            if (hasNetwork) {
-//                locationManager.requestLocationUpdates(
-//                    LocationManager.NETWORK_PROVIDER,
-//                    5000,
-//                    0F,
-//                    locationListener
-//                )
-//                val localNetworkLocation =
-//                    locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER)
-//                if (localNetworkLocation != null) {
-//                    //DO STH
-//                }
-//            }
-//        }
-//    }

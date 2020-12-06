@@ -12,6 +12,7 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.os.Build
+import android.util.Log
 import android.util.SparseArray
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -34,12 +35,14 @@ class PermissionManager(private val activity: Activity) {
             }
         }
         if (unGrantedPermission.size > 0) {
+            Log.d("permission", "no")
             registerCallback(listener, REQUEST_ALL)
             activity.requestPermissions(
                 unGrantedPermission.toTypedArray(),
                 REQUEST_ALL
             )
         } else {
+            Log.d("permission", "yes")
             listener.onPermissionsGranted()
         }
     }
@@ -55,11 +58,17 @@ class PermissionManager(private val activity: Activity) {
         listenerSparseArray.remove(requestCode)
     }
 
-    fun onPermissionsGranted(requestCode: Int) {
+    private fun onPermissionsGranted(requestCode: Int) {
         val listenerInstance = listenerSparseArray[requestCode]
         if (listenerInstance != null) {
             listenerInstance.onPermissionsGranted()
             unregisterListener(requestCode)
+        }
+    }
+
+    fun onPermissionsResult(grantResults: IntArray, requestCode: Int) {
+        if (!grantResults.contains(PackageManager.PERMISSION_DENIED)) {
+            onPermissionsGranted(requestCode)
         }
     }
 
