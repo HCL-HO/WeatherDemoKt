@@ -179,6 +179,9 @@ class MainActivity : AppCompatActivity() {
                         .apply(option)
                         .into(details_icon)
                 }
+                it.weather[0].description?.let {
+                    details_desciption.text = it
+                }
             }
 
             details_humidity.text = it.main.humidity.toHumidityPercent(this)
@@ -198,6 +201,7 @@ class MainActivity : AppCompatActivity() {
                 details_datetime.text = ""
                 details_wind.text = ""
                 details_humidity.text = ""
+                details_desciption.text = ""
                 details_icon.setImageResource(R.drawable.ic_baseline_error_24)
             }
         })

@@ -33,7 +33,7 @@ class WeatherUtil {
         }
 
         fun codeToIconUrl(code: String): String {
-            val urlTemplate = "http://openweathermap.org/img/wn/10d@4x.png"
+            val urlTemplate = "https://openweathermap.org/img/wn/10d@4x.png"
             return urlTemplate.replace("10d", code)
         }
 

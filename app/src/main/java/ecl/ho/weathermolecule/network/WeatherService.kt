@@ -20,7 +20,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 import java.nio.charset.Charset
 
-private const val BASE_URL = "http://api.openweathermap.org/"
+private const val BASE_URL = "https://api.openweathermap.org/"
 private const val B64_Key = "OTVkMTkwYTQzNDA4Mzg3OWE2Mzk4YWFmZDU0ZDllNzM="
 
 const val KEY_CITY_NAME = "q"

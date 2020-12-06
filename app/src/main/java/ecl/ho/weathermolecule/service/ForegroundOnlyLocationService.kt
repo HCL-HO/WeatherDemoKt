@@ -69,7 +69,7 @@ class ForegroundOnlyLocationService(
         try {
             //Get from last GPS within 5 minute
             fusedLocationProviderClient.lastLocation.addOnCompleteListener {
-                if (it.result.time > System.currentTimeMillis() - LOCATION_VALID_UNTIL) {
+                if (it.result != null && it.result.time > System.currentTimeMillis() - LOCATION_VALID_UNTIL) {
                     locationListener.onLocation(it.result)
                 } else {
                     removeCallback()
