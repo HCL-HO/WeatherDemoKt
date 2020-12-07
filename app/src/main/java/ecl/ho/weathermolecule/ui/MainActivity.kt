@@ -84,7 +84,8 @@ class MainActivity : AppCompatActivity() {
 
         val searchBarActionFilter = InputFilter { source, start, end, dest, dstart, dend ->
             // allow country code input when digits are input
-            if (source.length > 1 && WeatherUtil.isSearchByZipCode(source.toString())) {
+            val input = weather_search_bar.text.toString() + source
+            if (input.length > 1 && WeatherUtil.isSearchByZipCode(input)) {
                 weather_country_code.visibility = VISIBLE
             } else {
                 weather_country_code.visibility = GONE
