@@ -19,6 +19,7 @@ import ecl.ho.weathermolecule.network.ApiKey
 import ecl.ho.weathermolecule.network.WeatherApi
 import ecl.ho.weathermolecule.service.RecentSearchService
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import retrofit2.HttpException
@@ -28,7 +29,7 @@ class MainViewModel(
     private val context: Context
 ) :
     ViewModel() {
-
+    private var curJob: Job? = null
     val searchResult: MutableLiveData<WeatherResp> = MutableLiveData()
     val networkError: MutableLiveData<HttpException> = MutableLiveData()
 
@@ -57,7 +58,10 @@ class MainViewModel(
 
 
     private fun retrieveDataFromApi(api: Deferred<WeatherResp>) {
-        viewModelScope.launch {
+        if (curJob?.isActive == true) {
+            return
+        }
+        curJob = viewModelScope.launch {
             try {
                 val resp = api.await()
                 searchResult.postValue(resp)
@@ -72,7 +76,7 @@ class MainViewModel(
         }
     }
 
-    fun upsertSearchRecord(it: String) = runBlocking {
+    suspend fun upsertSearchRecord(it: String) {
         val record = SearchRecord(
             cityName = it,
             create_date = System.currentTimeMillis()
