@@ -26,6 +26,7 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class MainActivityTest {
+
     @Rule
     @JvmField
     val mainActivityRule = IntentsTestRule(MainActivity::class.java)

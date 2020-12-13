@@ -60,6 +60,7 @@ dependencies {
     // Dependencies for local unit tests
     testImplementation "junit:junit:$junitVersion"
     testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
+    androidTestImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     testImplementation "org.robolectric:robolectric:$robolectricVersion"
 
     // AndroidX Test - JVM testing

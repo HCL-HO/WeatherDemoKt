@@ -7,6 +7,7 @@
 
 package ecl.ho.weathermolecule.local
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
@@ -20,6 +21,7 @@ import kotlinx.coroutines.runBlocking
 import org.hamcrest.Matchers.*
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -29,6 +31,9 @@ import org.junit.runner.RunWith
 class SearchLocalDataSourceTest {
     private lateinit var database: WeatherDatabase
     private lateinit var dao: SearchRecordDao
+
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun setup() {
@@ -49,7 +54,7 @@ class SearchLocalDataSourceTest {
     }
 
     @Test
-    fun insertSearchRecord() = runBlocking {
+    fun insertSearchRecord_addNewRecord() = runBlocking {
         val record = SearchRecord(cityName = "HK", create_date = System.currentTimeMillis() - 1000)
         val record1 = SearchRecord(cityName = "UK", create_date = System.currentTimeMillis())
         dao.insertSearchRecord(record)
@@ -61,7 +66,7 @@ class SearchLocalDataSourceTest {
     }
 
     @Test
-    fun deleteAfterInsert() = runBlocking {
+    fun deleteAfterInsert_removeRecord() = runBlocking {
         val record = SearchRecord(cityName = "HK", create_date = System.currentTimeMillis() - 1000)
         dao.insertSearchRecord(record)
         val data = dao.getSearchHistoryList()
